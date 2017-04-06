@@ -1,0 +1,72 @@
+<?php
+
+/**
+ * @file
+ * Install, update and uninstall functions for the d8module module.
+ */
+
+function rave_alert_tables() {
+    $schema['campusalerts'] = array(
+        'description' => 'campus alert table created for RAVE',
+        'fields' => array(
+            'feed_description' => array(
+                'description' => 'description of the feed',
+                'type' => 'varchar',
+                'length' => 255,
+                'not null' => TRUE
+            ),
+            'feed_pubdate' => array(
+                'description' => 'feed published on',
+                'type' => 'varchar',
+                'length' => 100,
+                'not null' => TRUE,
+            ),
+            'feed_level' => array(
+                'description' => 'level of the alert',
+                'type' => 'varchar',
+                'length' => 40,
+                'not null' => TRUE,
+            ),
+        ),
+    );
+    return $schema;
+}
+
+/**
+ * Implements hook_install().
+ */
+function rave_alert_install() {
+    \Drupal\Core\Database\Database::setActiveConnection('default');
+    $connection = \Drupal\Core\Database\Database::getConnection();
+
+    $schema = rave_alert_tables();
+    foreach ($schema as $name => $table) {
+        $connection->schema()->createTable($name, $table);
+    }
+    $connection->insert("campusalerts")->fields([
+        'feed_description',
+        'feed_pubdate',
+        'feed_level',
+    ])->values(array(
+            'INITIAL ROW',
+            'INITIAL DATE',
+            '0',
+        ))->execute();
+
+    \Drupal\Core\Database\Database::setActiveConnection();
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function rave_alert_uninstall() {
+    \Drupal\Core\Database\Database::setActiveConnection('default');
+    $connection = \Drupal\Core\Database\Database::getConnection();
+
+    $schema = rave_alert_tables();
+    foreach ($schema as $name => $table) {
+        $connection->schema()->dropTable($name);
+    }
+
+    \Drupal\Core\Database\Database::setActiveConnection();
+}

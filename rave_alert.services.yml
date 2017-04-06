@@ -1,0 +1,8 @@
+services:
+  default.database:
+    class: Drupal\Core\Database\Connection
+    factory: Drupal\Core\Database\Database::getConnection
+    arguments: [default]
+  rave_alert_injected:
+    class: 'Drupal\rave_alert\AlertFeed'
+    arguments: ['@default.database']

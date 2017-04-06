@@ -1,0 +1,6 @@
+name: Rave_Alert_Module
+type: module
+description: 'Rave Alert Module Developed for Seattle Central College'
+package: Custom
+version: 8.1
+core: 8.x
