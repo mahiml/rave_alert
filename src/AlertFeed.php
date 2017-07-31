@@ -27,45 +27,50 @@ class AlertFeed
         );
     }
 
-    public $mock_data = "Mock Data from AlertFeed";
-
-
     /*
 		Display the campus alert
 	*/
     public function DisplayCampusAlert()
     {
-        //feed_alert, feed_description
-        $this->SaveFeed();
-        $arrData = $this->GetAlert();
         $messageDisplay = "";
-        //echo("Display Level: " .$arrData["feed_level"] . "<br />");
-        if (isset($arrData[0]->feed_level)) {
-            switch ($arrData[0]->feed_level) {
-                case 1:
-                    //Level 1 Alert:
-                    $messageDisplay = "<div id=\"rave-alert-01\">"
-                        . "    <div class=\"row\">"
-                        . "        <div class=\"large-12 columns\">"
-                        . "        <h1><i class=\"icon-warning-sign icon-right-padding\"></i>ALERT!</h1>"
-                        . "        <div class=\"rave-time\">Updated " .$arrData[0]->feed_pubdate . "</div>"
-                        . "           <p class=\"rave-msg\">" . $arrData[0]->feed_description . "</p>"
-                        . "        </div>"
-                        . "    </div>"
-                        . "</div>";
-                    break;
+        //feed_alert, feed_description
+        try {
+            $this->SaveFeed();
+            $arrData = $this->GetAlert();
+            //echo("Display Level: " .$arrData["feed_level"] . "<br />");
+            if (isset($arrData[0]->feed_level)) {
+                switch ($arrData[0]->feed_level) {
+                    case 1:
+                        //Level 1 Alert:
+                        $messageDisplay = "<div id=\"rave-alert-01\">"
+                            . "    <div class=\"row\">"
+                            . "    <div class=\"container\">"
+                            . "        <div class=\"large-12 columns\">"
+                            . "        <h1><i class=\"icon-warning-sign icon-right-padding\"></i>ALERT!</h1>"
+                            . "          <div class=\"rave-time\">Updated " . $arrData[0]->feed_pubdate . "</div>"
+                            . "           <p class=\"rave-msg\">" . $arrData[0]->feed_description . "</p>"
+                            . "         </div>"
+                            . "        </div>"
+                            . "    </div>"
+                            . "</div>";
+                        break;
 
-                case 2:
-                    //Level 2 Alert:
-                    $messageDisplay = "<div id=\"rave-alert-02\">"
-                        . "	   <div class=\"row\">"
-                        . "        <div class=\"large-12 columns\">"
-                        . "        <p class=\"rave-msg\"><i class=\"icon-warning-sign icon-right-padding\"></i>" . $arrData[0]->feed_description . " <span class=\"rave-time\">" . $arrData[0]->feed_pubdate . "</span></p>"
-                        . "        </div>"
-                        . "    </div>"
-                        . "</div>";
-                    break;
+                    case 2:
+                        //Level 2 Alert:
+                        $messageDisplay = "<div id=\"rave-alert-02\">"
+                            . "	   <div class=\"row\">"
+                            . "    <div class=\"container\">"
+                            . "        <div class=\"large-12 columns\">"
+                            . "        <p class=\"rave-msg\"><i class=\"icon-warning-sign icon-right-padding\"></i>" . $arrData[0]->feed_description . " <span class=\"rave-time\">" . $arrData[0]->feed_pubdate . "</span></p>"
+                            . "        </div>"
+                            . "    </div>"
+                            . "    </div>"
+                            . "</div>";
+                        break;
+                }
             }
+        } catch (\RuntimeException $ex) {
+            \Drupal::logger('rave_alert')->error($ex->getMessage());
         }
         return array(
             '#markup' => $messageDisplay
@@ -78,7 +83,7 @@ class AlertFeed
     */
     public function SaveFeed()
     {
-        $xmlFeed = "/Users/mahim/Desktop/mock_rave_data.xml";
+        $xmlFeed = "http://www.getrave.com/rss/seattlecolleges/channel4";
         $myfeed = simplexml_load_file($xmlFeed);
         $description = $myfeed->channel[0]->item[0]->description;
         $pubDate = $myfeed->channel[0]->item[0]->pubDate;
